@@ -48,22 +48,10 @@ namespace CaptchaSnaking
             using var img = Image.Load<Rgb24>(path);
             img.Mutate(x => x.AdaptiveThreshold());
 
+            var captchaStart = FindStartOfCaptcha(img);
+            var captchaEnd = FindEndOfCaptcha(img);
+
             using var newImg = img.Clone();
-
-            var captchaStart = new int[2];
-            var captchaEnd = new int[2];
-            
-            var parallelOptions = new ParallelOptions()
-            {
-                MaxDegreeOfParallelism = 4,
-            };
-
-            captchaStart = FindStartOfCaptcha(img);
-            Console.WriteLine(captchaStart[0] + " " + captchaStart[1]);
-
-            captchaEnd = FindEndOfCaptcha(img);
-            Console.WriteLine(captchaEnd[0] + " " + captchaEnd[1]);
-
             var cropRect = new Rectangle(captchaStart[0], 0, captchaEnd[0] - captchaStart[0], newImg.Height);
             newImg.Mutate(x => x.Crop(cropRect));
             newImg.SaveAsJpeg("C:\\Users\\YaKIT\\source\\repos\\CaptchaSnaking\\output.jpg");
